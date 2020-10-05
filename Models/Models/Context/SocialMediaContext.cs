@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using SocialMedia.Models;
+using Models.Models;
 
-namespace SocialMedia.Models.Context
+namespace Models.Models.Context
 {
     public partial class SocialMediaContext : DbContext
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SocialMedia.Models
+namespace Models.Models
 {
     public partial class AspNetUserLogins
     {
