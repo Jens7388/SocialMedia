@@ -4,6 +4,7 @@ using Models.Models;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,8 +15,8 @@ namespace DataAccess
         public override async Task<IEnumerable<Post>> GetAllAsync()
         {
             return await context.Set<Post>()
-                .Include("Comments")
-                .Include("User")
+                .Include(p => p.User)
+                .OrderByDescending(p => p.Created)
                 .ToListAsync();
         }
     }

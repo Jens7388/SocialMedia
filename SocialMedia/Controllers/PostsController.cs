@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 using DataAccess;
@@ -29,7 +30,7 @@ namespace SocialMedia.Controllers
         }
 
         // GET: Posts/Details/5
-        public async Task<IActionResult> Details(int id)
+        public async Task<IActionResult> Details(int? id)
         {
             Post post = await _repo.GetByIdAsync(id);
             if (post == null)
@@ -43,7 +44,7 @@ namespace SocialMedia.Controllers
         // GET: Posts/Create
         public IActionResult Create()
         {
-            ViewData["UserId"] = new SelectList(_context.AspNetUsers, "Id", "Id");
+           // ViewData["UserId"] = new SelectList(_context.AspNetUsers, "Id", "Id");
             return View();
         }
 
@@ -56,22 +57,24 @@ namespace SocialMedia.Controllers
         {
             if (ModelState.IsValid)
             {
+                post.Created = DateTime.Now;
+                post.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 await _repo.AddAsync(post);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UserId"] = new SelectList(_context.AspNetUsers, "Id", "Id", post.UserId);
+            ViewData["UserId"] = new SelectList(post.UserId);
             return View(post);
         }
 
         // GET: Posts/Edit/5
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(int? id)
         {
             Post post = await _repo.GetByIdAsync(id);
             if (post == null)
             {
                 return NotFound();
             }
-            ViewData["UserId"] = new SelectList(_context.AspNetUsers, "Id", "Id", post.UserId);
+            ViewData["UserId"] = new SelectList(post.UserId);
             return View(post);
         }
 
@@ -80,7 +83,7 @@ namespace SocialMedia.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,Image,IsEdited,Created,UserId")] Post post)
+        public async Task<IActionResult> Edit(int? id, [Bind("Id,Title,Description,Image,IsEdited,Created,UserId")] Post post)
         {
             if (id != post.Id)
             {
@@ -106,12 +109,12 @@ namespace SocialMedia.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UserId"] = new SelectList(_context.AspNetUsers, "Id", "Id", post.UserId);
+            ViewData["UserId"] = new SelectList(post.UserId);
             return View(post);
         }
 
         // GET: Posts/Delete/5
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int? id)
         {
             Post post = await _repo.GetByIdAsync(id);
             if (post == null)
@@ -132,11 +135,9 @@ namespace SocialMedia.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private async Task<bool> PostExists(int id)
+        private async Task<bool> PostExists(int? id)
         {
-            Post result = await _repo.GetByIdAsync(id);
-
-            return (result != null);
+            return await _repo.Exists(id);
         }
     }
 }

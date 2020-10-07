@@ -14,7 +14,7 @@ namespace DataAccess
 
         public RepositoryBase(SocialMediaContext context)
         {
-            Context = context;
+            this.context = context;
         }
 
         public RepositoryBase()
@@ -22,11 +22,7 @@ namespace DataAccess
             context = new SocialMediaContext();
         }
 
-        public virtual SocialMediaContext Context
-        {
-            get { return context; }
-            set { context = value; }
-        }
+
 
         public virtual async Task AddAsync(T t)
         {
@@ -34,7 +30,7 @@ namespace DataAccess
             await context.SaveChangesAsync();
         }
 
-        public virtual async Task<T> GetByIdAsync(int id)
+        public virtual async Task<T> GetByIdAsync(int? id)
         {
             return await context.Set<T>().FindAsync(id);
         }
@@ -55,6 +51,11 @@ namespace DataAccess
         {
             context.Set<T>().Remove(t);
             await context.SaveChangesAsync();
+        }
+
+        public virtual async Task<bool> Exists(int? id)
+        {
+            return await context.Set<T>().FindAsync(id) != null;
         }
     }
 }

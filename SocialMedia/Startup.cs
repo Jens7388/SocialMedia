@@ -12,6 +12,7 @@ using SocialMedia.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using DataAccess;
 
 namespace SocialMedia
 {
@@ -34,6 +35,7 @@ namespace SocialMedia
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
             services.AddRazorPages();
+            services.AddScoped<PostRepository>();
             services.AddAuthentication()
         .AddGoogle(options =>
         {
