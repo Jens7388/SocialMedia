@@ -153,7 +153,7 @@ namespace Models.Models.Context
                     .HasMaxLength(450);
 
                 entity.HasOne(d => d.Post)
-                    .WithMany(p => p.Comment)
+                    .WithMany(p => p.Comments)
                     .HasForeignKey(d => d.PostId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Comment_Post");

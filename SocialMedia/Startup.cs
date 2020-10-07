@@ -40,8 +40,8 @@ namespace SocialMedia
             IConfigurationSection googleAuthNSection =
                 Configuration.GetSection("Authentication:Google");
 
-            options.ClientId = googleAuthNSection["ClientId"];
-            options.ClientSecret = googleAuthNSection["ClientSecret"];
+            options.ClientId = "678114468356-nnjpsh4ncppmfkks9s59mpetgldi3s91.apps.googleusercontent.com";
+            options.ClientSecret = "dvkbt99TlooUTWDRZYk3lSpB";
         });
         }
 

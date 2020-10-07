@@ -7,7 +7,7 @@ namespace Models.Models
     {
         public Post()
         {
-            Comment = new HashSet<Comment>();
+            Comments = new HashSet<Comment>();
         }
 
         public int Id { get; set; }
@@ -19,6 +19,6 @@ namespace Models.Models
         public string UserId { get; set; }
 
         public virtual AspNetUsers User { get; set; }
-        public virtual ICollection<Comment> Comment { get; set; }
+        public virtual ICollection<Comment> Comments { get; set; }
     }
 }
