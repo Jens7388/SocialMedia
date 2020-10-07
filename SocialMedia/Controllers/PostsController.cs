@@ -70,10 +70,17 @@ namespace SocialMedia.Controllers
         public async Task<IActionResult> Edit(int? id)
         {
             Post post = await _repo.GetByIdAsync(id);
+
             if (post == null)
             {
                 return NotFound();
             }
+
+            if(post.UserId != User.FindFirstValue(ClaimTypes.NameIdentifier))
+            {
+                return NotFound();
+            }
+
             ViewData["UserId"] = new SelectList(post.UserId);
             return View(post);
         }
@@ -94,7 +101,15 @@ namespace SocialMedia.Controllers
             {
                 try
                 {
-                   await _repo.UpdateAsync(post);
+                    Post originalPost = await _repo.GetByIdAsync(id);
+
+                    originalPost.IsEdited = true;
+
+                    originalPost.Title = post.Title;
+                    originalPost.Description = post.Description;
+                    originalPost.Image = post.Image;
+
+                    await _repo.UpdateAsync(originalPost);
                 }
                 catch (DbUpdateConcurrencyException)
                 {

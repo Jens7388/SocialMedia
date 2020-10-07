@@ -16,6 +16,7 @@ namespace DataAccess
         {
             return await context.Set<Post>()
                 .Include(p => p.User)
+                .Include(p => p.Comments)
                 .OrderByDescending(p => p.Created)
                 .ToListAsync();
         }
