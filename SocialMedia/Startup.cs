@@ -36,6 +36,7 @@ namespace SocialMedia
             services.AddControllersWithViews();
             services.AddRazorPages();
             services.AddScoped<PostRepository>();
+            services.AddScoped<CommentRepository>();
             services.AddAuthentication()
             .AddMicrosoftAccount(microsoftOptions =>
             {
@@ -44,11 +45,8 @@ namespace SocialMedia
             })
         .AddGoogle(options =>
         {
-            IConfigurationSection googleAuthNSection =
-                Configuration.GetSection("Authentication:Google");
-
-            options.ClientId = "678114468356-nnjpsh4ncppmfkks9s59mpetgldi3s91.apps.googleusercontent.com";
-            options.ClientSecret = "dvkbt99TlooUTWDRZYk3lSpB";
+            options.ClientId = Configuration["Authentication:Google:ClientId"];
+            options.ClientSecret = Configuration["Authentication:Google:ClientSecret"]; ;
         });
 
         }

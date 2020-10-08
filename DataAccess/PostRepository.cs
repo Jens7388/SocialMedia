@@ -20,5 +20,12 @@ namespace DataAccess
                 .OrderByDescending(p => p.Created)
                 .ToListAsync();
         }
+        public override async Task<Post> GetByIdAsync(int? id)
+        {
+            return await context.Set<Post>()
+                .Include(p => p.User)
+                .Include(p => p.Comments)
+                .FirstOrDefaultAsync(p => p.Id == id);           
+        }
     }
 }

@@ -16,23 +16,25 @@ namespace SocialMedia.Controllers
 {
     public class PostsController : Controller
     {
-        private PostRepository _repo;
+        private PostRepository repo;
+        private readonly CommentRepository commentRepo;
 
-        public PostsController(PostRepository repo)
+        public PostsController(PostRepository repo, CommentRepository commentRepo)
         {
-            _repo = repo;
+            this.repo = repo;
+            this.commentRepo = commentRepo;
         }
 
         // GET: Posts
         public async Task<IActionResult> Index()
         {         
-            return View(await _repo.GetAllAsync());
+            return View(await repo.GetAllAsync());
         }
 
         // GET: Posts/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            Post post = await _repo.GetByIdAsync(id);
+            Post post = await repo.GetByIdAsync(id);
             if (post == null)
             {
                 return NotFound();
@@ -59,7 +61,7 @@ namespace SocialMedia.Controllers
             {
                 post.Created = DateTime.Now;
                 post.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                await _repo.AddAsync(post);
+                await repo.AddAsync(post);
                 return RedirectToAction(nameof(Index));
             }
             ViewData["UserId"] = new SelectList(post.UserId);
@@ -69,7 +71,7 @@ namespace SocialMedia.Controllers
         // GET: Posts/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            Post post = await _repo.GetByIdAsync(id);
+            Post post = await repo.GetByIdAsync(id);
 
             if (post == null)
             {
@@ -101,7 +103,7 @@ namespace SocialMedia.Controllers
             {
                 try
                 {
-                    Post originalPost = await _repo.GetByIdAsync(id);
+                    Post originalPost = await repo.GetByIdAsync(id);
 
                     originalPost.IsEdited = true;
 
@@ -109,7 +111,7 @@ namespace SocialMedia.Controllers
                     originalPost.Description = post.Description;
                     originalPost.Image = post.Image;
 
-                    await _repo.UpdateAsync(originalPost);
+                    await repo.UpdateAsync(originalPost);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -131,7 +133,7 @@ namespace SocialMedia.Controllers
         // GET: Posts/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            Post post = await _repo.GetByIdAsync(id);
+            Post post = await repo.GetByIdAsync(id);
             if (post == null)
             {
                 return NotFound();
@@ -145,14 +147,46 @@ namespace SocialMedia.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            Post post = await _repo.GetByIdAsync(id);
-            await _repo.DeleteAsync(post);
+            Post post = await repo.GetByIdAsync(id);
+            await repo.DeleteAsync(post);
             return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult Reply()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Reply(int? id, [Bind("Description,PostId,Image,IsEdited,Created,UserId")] Comment comment)
+        {
+            Post post = await repo.GetByIdAsync(id);
+            if(ModelState.IsValid)
+            {
+                comment.Created = DateTime.Now;
+                comment.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                comment.PostId = post.Id;
+                await commentRepo.AddAsync(comment);
+                return RedirectToAction(nameof(Index));
+            }
+            ViewData["UserId"] = new SelectList(post.UserId);
+            return View(post);
+        }
+
+        public async Task<IActionResult> Comments(int? id)
+        {
+            Post post = await repo.GetByIdAsync(id);
+            if(post == null)
+            {
+                return NotFound();
+            }
+            return View(post);
         }
 
         private async Task<bool> PostExists(int? id)
         {
-            return await _repo.Exists(id);
+            return await repo.Exists(id);
         }
     }
 }
