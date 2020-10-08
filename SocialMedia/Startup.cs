@@ -37,6 +37,11 @@ namespace SocialMedia
             services.AddRazorPages();
             services.AddScoped<PostRepository>();
             services.AddAuthentication()
+            .AddMicrosoftAccount(microsoftOptions =>
+            {
+                microsoftOptions.ClientId = Configuration["Authentication:Microsoft:ClientId"];
+                microsoftOptions.ClientSecret = Configuration["Authentication:Microsoft:ClientSecret"];
+            })
         .AddGoogle(options =>
         {
             IConfigurationSection googleAuthNSection =
@@ -45,7 +50,9 @@ namespace SocialMedia
             options.ClientId = "678114468356-nnjpsh4ncppmfkks9s59mpetgldi3s91.apps.googleusercontent.com";
             options.ClientSecret = "dvkbt99TlooUTWDRZYk3lSpB";
         });
+
         }
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
